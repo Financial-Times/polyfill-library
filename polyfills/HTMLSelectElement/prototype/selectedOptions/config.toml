@@ -1,0 +1,38 @@
+#### Aliases
+aliases = []
+
+#### Dependencies
+dependencies = [
+  "Object.defineProperty",
+  "document.querySelector"
+]
+
+notes = [
+  "Polyfill requires Object getters so fails in IE < 8",
+  "Polyfill does not return a live HTMLCollection, only a static NodeList that has the same methods as an HTMLCollection",
+]
+
+#### Specification Link
+spec = "https://html.spec.whatwg.org/multipage/form-elements.html#dom-select-selectedoptions"
+
+#### Documentation Link
+docs = "https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/selectedOptions"
+
+#### License
+license = "MIT"
+
+#### Browser compatibility
+[browsers]
+android = "<38"
+bb = "*"
+chrome = "<19"
+firefox = "<26"
+ios_chr = "<6"
+ios_saf = "<6"
+ie = "9 - *"
+ie_mob = "9 - *"
+opera = "<9"
+op_mini = "<10.1"
+safari = "<6"
+firefox_mob = "<26"
+samsung_mob = "<1.5"

@@ -7,30 +7,32 @@ jobs:
   android:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.4
-      with:
-        node-version: 12.x
-    - run: npm ci
-    - run: npm run build
-    - name: Run tests on android without polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js control browser=android || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Run tests on android all polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all browser=android || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Figure out which versions require the polyfill and which versions do not
-      run: node ./test/polyfills/compat.js
-    - name: Update the browser targeting configuration for all polyfills
-      run: node ./test/polyfills/update-polyfill-targeting.js
-    - name: make pull-requests
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12.x
+      - run: npm ci
+      - run: npm run build
+      - name: Run tests on android without polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js
+          control browser=android || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Run tests on android all polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all
+          browser=android || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Figure out which versions require the polyfill and which versions do not
+        run: node ./test/polyfills/compat.js
+      - name: Update the browser targeting configuration for all polyfills
+        run: node ./test/polyfills/update-polyfill-targeting.js
+      - name: make pull-requests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
           for i in `git diff --name-only`; 
           do 
@@ -48,32 +50,34 @@ jobs:
           done
   chrome:
     runs-on: ubuntu-latest
-    needs: [android]
+    needs: [ android ]
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.4
-      with:
-        node-version: 12.x
-    - run: npm ci
-    - run: npm run build
-    - name: Run tests on chrome without polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js control browser=chrome || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Run tests on chrome all polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all browser=chrome || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Figure out which versions require the polyfill and which versions do not
-      run: node ./test/polyfills/compat.js
-    - name: Update the browser targeting configuration for all polyfills
-      run: node ./test/polyfills/update-polyfill-targeting.js
-    - name: make pull-requests
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12.x
+      - run: npm ci
+      - run: npm run build
+      - name: Run tests on chrome without polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js
+          control browser=chrome || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Run tests on chrome all polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all
+          browser=chrome || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Figure out which versions require the polyfill and which versions do not
+        run: node ./test/polyfills/compat.js
+      - name: Update the browser targeting configuration for all polyfills
+        run: node ./test/polyfills/update-polyfill-targeting.js
+      - name: make pull-requests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
           for i in `git diff --name-only`; 
           do 
@@ -91,32 +95,34 @@ jobs:
           done
   edge:
     runs-on: ubuntu-latest
-    needs: [chrome]
+    needs: [ chrome ]
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.4
-      with:
-        node-version: 12.x
-    - run: npm ci
-    - run: npm run build
-    - name: Run tests on edge without polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js control browser=edge || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Run tests on edge all polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all browser=edge || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Figure out which versions require the polyfill and which versions do not
-      run: node ./test/polyfills/compat.js
-    - name: Update the browser targeting configuration for all polyfills
-      run: node ./test/polyfills/update-polyfill-targeting.js
-    - name: make pull-requests
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12.x
+      - run: npm ci
+      - run: npm run build
+      - name: Run tests on edge without polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js
+          control browser=edge || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Run tests on edge all polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all
+          browser=edge || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Figure out which versions require the polyfill and which versions do not
+        run: node ./test/polyfills/compat.js
+      - name: Update the browser targeting configuration for all polyfills
+        run: node ./test/polyfills/update-polyfill-targeting.js
+      - name: make pull-requests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
           for i in `git diff --name-only`; 
           do 
@@ -134,32 +140,34 @@ jobs:
           done
   firefox:
     runs-on: ubuntu-latest
-    needs: [edge]
+    needs: [ edge ]
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.4
-      with:
-        node-version: 12.x
-    - run: npm ci
-    - run: npm run build
-    - name: Run tests on firefox without polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js control browser=firefox || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Run tests on firefox all polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all browser=firefox || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Figure out which versions require the polyfill and which versions do not
-      run: node ./test/polyfills/compat.js
-    - name: Update the browser targeting configuration for all polyfills
-      run: node ./test/polyfills/update-polyfill-targeting.js
-    - name: make pull-requests
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12.x
+      - run: npm ci
+      - run: npm run build
+      - name: Run tests on firefox without polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js
+          control browser=firefox || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Run tests on firefox all polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all
+          browser=firefox || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Figure out which versions require the polyfill and which versions do not
+        run: node ./test/polyfills/compat.js
+      - name: Update the browser targeting configuration for all polyfills
+        run: node ./test/polyfills/update-polyfill-targeting.js
+      - name: make pull-requests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
           for i in `git diff --name-only`; 
           do 
@@ -177,32 +185,34 @@ jobs:
           done
   ie:
     runs-on: ubuntu-latest
-    needs: [firefox]
+    needs: [ firefox ]
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.4
-      with:
-        node-version: 12.x
-    - run: npm ci
-    - run: npm run build
-    - name: Run tests on ie without polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js control browser=ie || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Run tests on ie all polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all browser=ie || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Figure out which versions require the polyfill and which versions do not
-      run: node ./test/polyfills/compat.js
-    - name: Update the browser targeting configuration for all polyfills
-      run: node ./test/polyfills/update-polyfill-targeting.js
-    - name: make pull-requests
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12.x
+      - run: npm ci
+      - run: npm run build
+      - name: Run tests on ie without polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js
+          control browser=ie || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Run tests on ie all polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all
+          browser=ie || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Figure out which versions require the polyfill and which versions do not
+        run: node ./test/polyfills/compat.js
+      - name: Update the browser targeting configuration for all polyfills
+        run: node ./test/polyfills/update-polyfill-targeting.js
+      - name: make pull-requests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
           for i in `git diff --name-only`; 
           do 
@@ -220,32 +230,34 @@ jobs:
           done
   ios:
     runs-on: ubuntu-latest
-    needs: [ie]
+    needs: [ ie ]
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.4
-      with:
-        node-version: 12.x
-    - run: npm ci
-    - run: npm run build
-    - name: Run tests on ios without polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js control browser=ios || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Run tests on ios all polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all browser=ios || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Figure out which versions require the polyfill and which versions do not
-      run: node ./test/polyfills/compat.js
-    - name: Update the browser targeting configuration for all polyfills
-      run: node ./test/polyfills/update-polyfill-targeting.js
-    - name: make pull-requests
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12.x
+      - run: npm ci
+      - run: npm run build
+      - name: Run tests on ios without polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js
+          control browser=ios || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Run tests on ios all polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js all
+          browser=ios || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Figure out which versions require the polyfill and which versions do not
+        run: node ./test/polyfills/compat.js
+      - name: Update the browser targeting configuration for all polyfills
+        run: node ./test/polyfills/update-polyfill-targeting.js
+      - name: make pull-requests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
           for i in `git diff --name-only`; 
           do 
@@ -263,33 +275,35 @@ jobs:
           done
   safari:
     runs-on: ubuntu-latest
-    needs: [ios]
+    needs: [ ios ]
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.4
-      with:
-        node-version: 12.x
-    - run: npm ci
-    - run: npm run build
-    - name: Run tests on safari without polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js control browser=safari || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - run: all ci
-    - name: Run tests all safari without polyfills
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js control browser=safari || true
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-    - name: Figure out which versions require the polyfill and which versions do not
-      run: node ./test/polyfills/compat.js
-    - name: Update the browser targeting configuration for all polyfills
-      run: node ./test/polyfills/update-polyfill-targeting.js
-    - name: make pull-requests
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12.x
+      - run: npm ci
+      - run: npm run build
+      - name: Run tests on safari without polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js
+          control browser=safari || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - run: all ci
+      - name: Run tests all safari without polyfills
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js
+          control browser=safari || true
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Figure out which versions require the polyfill and which versions do not
+        run: node ./test/polyfills/compat.js
+      - name: Update the browser targeting configuration for all polyfills
+        run: node ./test/polyfills/update-polyfill-targeting.js
+      - name: make pull-requests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
           for i in `git diff --name-only`; 
           do 

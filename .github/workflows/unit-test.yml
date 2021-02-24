@@ -9,10 +9,10 @@ jobs:
   unit-test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.4
-      with:
-        node-version: 12.x
-    - run: npm ci
-    - run: npm run build
-    - run: npm run test-library
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12.x
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test-library

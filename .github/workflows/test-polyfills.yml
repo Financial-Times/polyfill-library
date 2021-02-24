@@ -1,4 +1,4 @@
-name: Test Polyfills 
+name: Test Polyfills
 on:
   push:
     branches:
@@ -11,58 +11,59 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.pull_request.head.repo.fork == false}}
     steps:
-    - name: Cancel Previous Runs
-      uses: styfle/cancel-workflow-action@0.7.0
-      with:
-        access_token: ${{ github.token }}
-    - name: Turnstyle
-      uses: softprops/turnstyle@v1
-      with:
-        same-branch-only: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@3d86a7cc43670094ac248017207be0295edbc31d # pin@0.8.0
+        with:
+          access_token: ${{ github.token }}
+      - name: Turnstyle
+        uses: softprops/turnstyle@a714535c65d622af7010e609960ccf0ea5001e3f # pin@v1
+        with:
+          same-branch-only: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   test:
     runs-on: ubuntu-latest
-    needs: [check-for-other-pull-requests-running-this-workflow]
+    needs: [ check-for-other-pull-requests-running-this-workflow ]
     strategy:
       max-parallel: 1
       fail-fast: false
       matrix:
-        browser: [ie, android, chrome, edge, firefox, ios, safari]
+        browser: [ ie, android, chrome, edge, firefox, ios, safari ]
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.4
-      with:
-        node-version: 12.x
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12.x
 
-    - name: env
-      run: echo "commit-sha=$(echo ${GITHUB_SHA})" >> $GITHUB_ENV
+      - name: env
+        run: echo "commit-sha=$(echo ${GITHUB_SHA})" >> $GITHUB_ENV
 
-    - run: npm ci
+      - run: npm ci
 
-    - name: cache __dist
-      id: cache-dist
-      uses: actions/cache@v2
-      with:
-        path: polyfills/__dist
-        key: cache--dist--${{ env.commit-sha }}
-  
-    - run: npm run build
-      if: steps.cache-dist.outputs.cache-hit != 'true'
+      - name: cache __dist
+        id: cache-dist
+        uses: actions/cache@v2.1.4
+        with:
+          path: polyfills/__dist
+          key: cache--dist--${{ env.commit-sha }}
 
-    - run : echo "${{ matrix.browser }}" > $GITHUB_WORKSPACE/witness-${{ matrix.browser }}
-    - name: record ${{ matrix.browser }} witness
-      id: witness
-      uses: actions/cache@v2
-      with:
-        path: $GITHUB_WORKSPACE/witness-${{ matrix.browser }}
-        key: witness--${{ matrix.browser }}--${{ env.commit-sha }}
+      - run: npm run build
+        if: steps.cache-dist.outputs.cache-hit != 'true'
 
-    - name: Test ${{ matrix.browser }}
-      run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js targeted director browser=${{ matrix.browser }}
-      if: steps.witness.outputs.cache-hit != 'true'
-      timeout-minutes: 30
-      env:
-        BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - run: echo "${{ matrix.browser }}" > $GITHUB_WORKSPACE/witness-${{ matrix.browser }}
+      - name: record ${{ matrix.browser }} witness
+        id: witness
+        uses: actions/cache@v2.1.4
+        with:
+          path: $GITHUB_WORKSPACE/witness-${{ matrix.browser }}
+          key: witness--${{ matrix.browser }}--${{ env.commit-sha }}
+
+      - name: Test ${{ matrix.browser }}
+        run: node ./test/polyfills/server.js & node ./test/polyfills/remotetest.js
+          targeted director browser=${{ matrix.browser }}
+        if: steps.witness.outputs.cache-hit != 'true'
+        timeout-minutes: 30
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}

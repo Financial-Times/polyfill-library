@@ -1,6 +1,8 @@
 on:
   pull_request:
-    types: [closed] # Merged pull-requests count as closed pull-requests.
+    types:
+      [ closed ]
+      # Merged pull-requests count as closed pull-requests.
 
 jobs:
   create-new-version:
